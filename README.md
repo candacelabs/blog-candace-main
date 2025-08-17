@@ -1,6 +1,6 @@
 # blog
 
-This tracks hugo-based sites that are hosted on candaceserver. 
+This tracks hugo-based sites, like the [blog](https://blog.candace.cloud) that are hosted on [candaceserver](https://candace.cloud). 
 
 Fully containerized and plug-and-playable into any docker compose setup. 
 
