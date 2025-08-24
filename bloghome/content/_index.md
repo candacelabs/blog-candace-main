@@ -24,3 +24,5 @@ the homepage mimics the terminal style from the main candaceserver page, while i
 - back-to-terminal navigation
 
 try clicking on a post to see the clean interface, then come back here for the terminal vibes!
+
+### [back to candace home](https://candace.cloud/)
