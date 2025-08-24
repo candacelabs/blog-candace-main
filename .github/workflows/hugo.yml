@@ -29,6 +29,11 @@ jobs:
           hugo-version: '0.148.0'
           extended: true
 
+      - name: Copy theme to bloghome
+        run: |
+          mkdir -p ./bloghome/themes
+          cp -r ./themes/candace ./bloghome/themes/
+
       - name: Build with Hugo
         working-directory: ./bloghome
         run: hugo --minify --baseURL "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
