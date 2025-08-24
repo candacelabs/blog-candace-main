@@ -4,6 +4,37 @@ This tracks hugo-based sites, like the [blog](https://blog.candace.cloud) that a
 
 Fully containerized and plug-and-playable into any docker compose setup.
 
+## Features
+
+### Theme Features
+- **Terminal Aesthetic**: Clean, monospace design inspired by command-line interfaces
+- **Responsive Design**: Works on desktop and mobile devices
+- **Dark Mode Ready**: Built with terminal-style dark colors
+- **Social Links Integration**: Display GitHub, LinkedIn, Twitter, and email contacts
+- **Recent Posts**: Automatic listing of your latest blog posts on the homepage
+- **SEO Friendly**: Proper meta tags and semantic HTML structure
+
+### Development Features
+- **Live Reloading**: Instant preview of changes during development
+- **Containerized Workflow**: No local Hugo installation required
+- **Docker-based**: Consistent environment across all platforms
+- **Hot Reload**: File changes automatically refresh the browser
+- **Draft Support**: Preview draft posts during development
+
+### Deployment Features
+- **GitHub Pages Ready**: Automatic deployment via GitHub Actions
+- **Static Site Generation**: Fast, secure static HTML output
+- **Multiple Deployment Options**: Docker Compose, standalone Docker, or static files
+- **Production Optimized**: Minified output and optimized assets
+- **Custom Domain Support**: Easy integration with custom domains
+
+### Technical Features
+- **Hugo v0.148.0**: Latest Hugo version with extended features
+- **No Build Dependencies**: Everything runs in containers
+- **Version Controlled**: Theme and content separate from generated files
+- **Modular Structure**: Easy to customize and extend
+- **Modern Web Standards**: Clean HTML5 and CSS3
+
 ## Development & Testing
 
 For development and testing, you can run everything in containers without needing Hugo installed locally:
