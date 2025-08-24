@@ -1,7 +1,7 @@
 ---
 title: "first post: testing the ping vibes"
-date: 2024-08-24
-tags: ["demo", "terminal", "ping"]
+date: 2024-08-25
+tags: ["demo", "terminal", "ping", "ai-generated"]
 ---
 
 this is a test post to demonstrate the clean app-style interface inspired by the candaceserver ping service.
