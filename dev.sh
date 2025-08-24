@@ -7,11 +7,11 @@ echo "Building blog development image..."
 docker build -t blog-dev . && \
 
 echo "Starting Hugo development server..."
-echo "Visit http://localhost:1313 to see your site"
+echo "Visit http://localhost:1314 to see your site"
 echo "Press Ctrl+C to stop"
 
 docker run -it --rm \
-  -p 1313:1313 \
+  -p 1314:1313 \
   -v $(pwd)/bloghome/content:/srv/content \
   -v $(pwd)/bloghome/archetypes:/srv/archetypes \
   -v $(pwd)/bloghome/assets:/srv/assets \

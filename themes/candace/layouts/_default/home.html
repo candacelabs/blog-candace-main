@@ -24,7 +24,7 @@
       {{ with site.Params.email }}
       <li>email: {{ . }}</li>
       {{ end }}
-      {{ with site.Social }}
+      {{ with site.Params.social }}
         {{ range $key, $value := . }}
         <li>{{ $key }}: {{ if hasPrefix $value "http" }}<a href="{{ $value }}" target="_blank">{{ $value }}</a>{{ else }}{{ $value }}{{ end }}</li>
         {{ end }}

@@ -8,6 +8,6 @@ author = 'your name here'
 github = 'yourusername'
 email = 'your@email.com'
 
-[social]
+[params.social]
 linkedin = 'https://linkedin.com/in/yourprofile'
 twitter = '@yourusername'
