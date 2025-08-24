@@ -32,6 +32,7 @@ jobs:
       - name: Copy theme to bloghome
         run: |
           mkdir -p ./bloghome/themes
+          rm -rf ./bloghome/themes/candace
           cp -r ./themes/candace ./bloghome/themes/
 
       - name: Build with Hugo
