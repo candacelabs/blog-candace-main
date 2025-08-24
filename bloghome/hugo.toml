@@ -1,12 +1,12 @@
-baseURL = 'https://candacelabs.github.io/blog/'
+baseURL = 'https://blog.candace.cloud/'
 languageCode = 'en-us'
 title = 'candaceblog'
 theme = 'candace'
 
 [params]
-author = 'your name here'
-github = 'yourusername'
-email = 'your@email.com'
+author = 'Skanda Kaashyap'
+github = 'kaashmonee'
+email = 'skandakk a t gmail d o t com'
 
 [params.social]
 linkedin = 'https://linkedin.com/in/yourprofile'

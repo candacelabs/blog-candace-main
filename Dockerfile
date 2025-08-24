@@ -14,6 +14,8 @@ RUN curl -L "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}
     && dpkg -i hugo.deb \
     && rm hugo.deb
 
+COPY ["themes/candace", "themes/candace"]
+
 # Hugo tries to create a lock file when building but since we change the user
 # we have to give the Hugo server process user permission to write to the 
 # /srv directory. This way any stateful changes run INSIDE a container as 
