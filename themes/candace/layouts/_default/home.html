@@ -1,0 +1,34 @@
+{{ define "main" }}
+  <div class="terminal">
+    <h2>welcome to {{ site.Title | default "candaceblog" }}</h2>
+    {{ with site.Params.author }}
+    <p>hosted by: {{ . }}</p>
+    {{ end }}
+    
+    {{ .Content }}
+    
+    {{ if site.RegularPages }}
+    <h3>recent posts:</h3>
+    <ul>
+      {{ range first 10 site.RegularPages }}
+      <li>{{ .Date.Format "2006-01-02" }} - <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>
+      {{ end }}
+    </ul>
+    {{ end }}
+    
+    <h4>find me on</h4>
+    <ul>
+      {{ with site.Params.github }}
+      <li>github: <a href="https://github.com/{{ . }}" target="_blank">https://github.com/{{ . }}</a></li>
+      {{ end }}
+      {{ with site.Params.email }}
+      <li>email: {{ . }}</li>
+      {{ end }}
+      {{ with site.Social }}
+        {{ range $key, $value := . }}
+        <li>{{ $key }}: {{ if hasPrefix $value "http" }}<a href="{{ $value }}" target="_blank">{{ $value }}</a>{{ else }}{{ $value }}{{ end }}</li>
+        {{ end }}
+      {{ end }}
+    </ul>
+  </div>
+{{ end }}

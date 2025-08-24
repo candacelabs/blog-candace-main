@@ -1,0 +1,13 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-us'
+title = 'candaceblog'
+theme = 'candace'
+
+[params]
+author = 'your name here'
+github = 'yourusername'
+email = 'your@email.com'
+
+[social]
+linkedin = 'https://linkedin.com/in/yourprofile'
+twitter = '@yourusername'

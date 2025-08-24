@@ -1,0 +1,29 @@
+{{ define "main" }}
+  <div class="app-style">
+    <div class="container">
+      <h1>{{ .Title }}</h1>
+      {{ .Content }}
+      
+      {{ if .Pages }}
+      <div class="post-list">
+        {{ range .Pages }}
+        <article class="post-item">
+          <h2 class="post-title"><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
+          <div class="post-meta">
+            {{ .Date.Format "January 2, 2006" }}
+            {{ if .Params.tags }}
+            | Tags: {{ delimit .Params.tags ", " }}
+            {{ end }}
+          </div>
+          <div class="post-summary">{{ .Summary }}</div>
+        </article>
+        {{ end }}
+      </div>
+      {{ end }}
+      
+      <div class="footer">
+        <a href="/" class="button">← Back to Terminal</a>
+      </div>
+    </div>
+  </div>
+{{ end }}
