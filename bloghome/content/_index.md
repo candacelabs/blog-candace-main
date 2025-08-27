@@ -48,6 +48,11 @@ as a means of experimenting with the [GOTTH](https://github.com/TomDoesTech/GOTT
         - all of this just...to use the cpu cores i already paid for...?
 6. want serverside rendering but don't to be chained to v0 + vercel + aws oligopoly
 
+## apps
+
+1. [007](https://candace.cloud/007): encrypted, in-memory secret sharing service
+2. [pastebin clone](https://candace.cloud/paste): encrypted, in-memory pastebin clone
+
 ### how does this work?
 
 infrastructure stack:
