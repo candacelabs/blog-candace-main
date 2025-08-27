@@ -4,7 +4,7 @@ date: 2024-08-25
 tags: ["demo", "terminal", "ping", "ai-generated"]
 ---
 
-this is a test post to demonstrate the clean app-style interface inspired by the candaceserver ping service.
+this is a test/sample ai generated post to demonstrate the clean app-style interface inspired by the candaceserver ping service.
 
 ## features demonstrated
 
@@ -21,13 +21,3 @@ this post layout includes:
 curl https://candace.cloud/ping
 # returns: "ive been visited X times"
 ```
-
-notice how this feels different from the terminal homepage but maintains the same underlying aesthetic philosophy.
-
-<div class="info">
-this is an info box styled like the ping service apps
-</div>
-
-<div class="warning">
-⚠️ this is a warning box like in the 007 secret service
-</div>

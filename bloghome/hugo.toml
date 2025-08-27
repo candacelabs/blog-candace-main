@@ -1,6 +1,6 @@
 baseURL = 'https://blog.candace.cloud/'
 languageCode = 'en-us'
-title = 'candaceblog'
+title = 'candacecloud'
 theme = 'candace'
 
 [params]
@@ -9,5 +9,8 @@ github = 'kaashmonee'
 email = 'skandakk a t gmail d o t com'
 
 [params.social]
-linkedin = 'https://linkedin.com/in/yourprofile'
-twitter = '@yourusername'
+linkedin = 'https://linkedin.com/in/kaashmonee'
+github = 'https://github.com/kaashmonee'
+githubcandace = 'https://github.com/candacelabs'
+resume = 'https://docs.google.com/document/d/1P8LsmdQ1ZsWUwE8tb2j5lexbQHrQauMWCSgeGFumirE/edit?usp=sharing'
+

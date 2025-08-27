@@ -25,7 +25,7 @@ the casual, lowercase writing style ("welcome to candaceserver", "ive been visit
 
 ## dual personality
 
-what's brilliant about the ping service is how it transitions from the raw terminal homepage to polished app interfaces:
+what's brilliant about the ping service is how it transitions from the raw terminal homepage to polished app interfaces: (for the record, i did NOT write this)
 
 - **homepage**: raw, personal, terminal
 - **apps**: clean, professional, modern
