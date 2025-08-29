@@ -41,7 +41,7 @@ as a means of experimenting with the [GOTTH](https://github.com/TomDoesTech/GOTT
         - celery + redis + multiple asgi/python runtimes
         - = multiple compute instances means more infrastructure to manage
         - = more infrastructure to manage means unnecessary microservices
-        - = unnecessary microservices means more money to big tech
+        - = unnecessary microservices means hemhorraging costs
         - = more money to big tech incentivizes cycle of predatory cloud pricing and anti-competitive vendor lock-in practices
         - = cloud business still completely unregulated
         - = software slowly continues to get worse in the long run
