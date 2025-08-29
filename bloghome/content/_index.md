@@ -43,8 +43,7 @@ as a means of experimenting with the [GOTTH](https://github.com/TomDoesTech/GOTT
         - = more infrastructure to manage means unnecessary microservices
         - = unnecessary microservices means hemhorraging costs
         - = exacerbates cycle of predatory cloud pricing and anti-competitive vendor lock-in practices
-        - = cloud business still completely unregulated
-        - = software slowly continues to get worse in the long run
+        - = culminates in long term deterioration of software quality and human quality of life in an increasingly software-centric world
         - all of this just...to use the cpu cores i already paid for...?
 6. want serverside rendering but don't to be chained to v0 + vercel + aws oligopoly
 
