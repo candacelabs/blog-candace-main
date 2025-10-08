@@ -18,34 +18,63 @@ title: "welcome to candaceserver on candace.cloud"
 
 ## what am i looking at
 
-candaceserver is an experiment in hosting in the age of AI vibecoding:
+<details>
+
+<summary> candaceserver is an experiment in hosting in the age of AI vibecoding: </summary>
 
 > "Vibe coding menugen was exhilarating and fun escapade as a local demo, but a bit of a painful slog as a deployed, real app. Building a modern app is a bit like assembling IKEA future. There are all these services, docs, API keys, configurations, dev/prod deployments, team and security features, rate limits, pricing tiers... Meanwhile the LLMs have slightly outdated knowledge of everything, they make subtle but critical design mistakes when you watch them closely, and sometimes they hallucinate or gaslight you about solutions. But the most interesting part to me was that I didn't even spend all that much work in the code editor itself. I spent most of it in the browser, moving between tabs and settings and configuring and gluing a monster. All of this work and state is not even accessible or manipulatable by an LLM - how are we supposed to be automating society by 2027 like this?"
 
 - [andrej karpathy, twitter, 2025](https://x.com/karpathy/status/1917961248031080455)
 
+</details>
+
 growing up i never had an opportunity to go through a goth phase. i wasn't allowed to wear ripped pants in my house.
 but i think it's time to embrace my inner goth now. that is to say, i also use candaceserver
 as a means of experimenting with the [GOTTH](https://github.com/TomDoesTech/GOTTH) stack, which i think solves a lot of issues of modern day web dev that causes the problems that karpathy talks about above, like:
 
-1. build bloat
-2. framework bloat
-3. superfluous client-side state management (do we *really* need redux if most of us now, unlike in 2012, have fiber access with gigabit download speeds?)
-4. vibecoding currently not fun
-5. runtime bloat, microservice hell, and vendor lockin
-    - "man i need concurrency"
-    - "ok sure here's some concurrency"
-    - "can i also get some parallelism"
-    - "we have parallelism at home"
-    - parallelism at home:
-        - celery + redis + multiple asgi/python runtimes
-        - = multiple compute instances means more infrastructure to manage
-        - = more infrastructure to manage means unnecessary microservices
-        - = unnecessary microservices means hemhorraging costs
-        - = exacerbates cycle of predatory cloud pricing and anti-competitive vendor lock-in practices
-        - = culminates in long term deterioration of software quality and human quality of life in an increasingly software-centric world
-        - all of this just...to use the cpu cores i already paid for...?
-6. want serverside rendering but don't to be chained to v0 + vercel + aws oligopoly
+<details>
+<summary>1. build bloat</summary>
+webpack, gunicorn, asgi, :(
+</details>
+
+<details>
+<summary>2. framework bloat</summary>
+node_packages, inconsistent requirements.txt
+</details>
+
+<details>
+<summary>3. superfluous client-side state management</summary>
+
+do we *really* need redux if most of us now, unlike in 2012, have fiber access with gigabit download speeds?
+</details>
+
+<details>
+<summary>4. vibecoding currently not fun</summary>
+most vibecoded apps get really slow and are resource intensive :(
+makes vibecoding not really fun if you can't make good things with it
+</details>
+
+<details>
+<summary>5. runtime bloat, microservice hell, and vendor lockin</summary>
+
+- "man i need concurrency"
+- "ok sure here's some concurrency"
+- "can i also get some parallelism"
+- "we have parallelism at home"
+- parallelism at home:
+  - celery + redis + multiple asgi/python runtimes
+  - = multiple compute instances means more infrastructure to manage
+  - = more infrastructure to manage means unnecessary microservices
+  - = unnecessary microservices means hemhorraging costs
+  - = exacerbates cycle of predatory cloud pricing and anti-competitive vendor lock-in practices
+  - = culminates in long term deterioration of software quality and human quality of life in an increasingly software-centric world
+  - all of this just...to use the cpu cores i already paid for...?
+
+</details>
+
+<details>
+<summary>6. want serverside rendering but don't want to be chained to v0 + vercel + aws oligopoly</summary>
+</details>
 
 ## apps
 
@@ -54,7 +83,9 @@ as a means of experimenting with the [GOTTH](https://github.com/TomDoesTech/GOTT
 
 ### how does this work?
 
-infrastructure stack:
+<details>
+
+<summary>infrastructure stack:</summary>
 
 1. default ATT home internet gateway, seems ok for now, capable of handling 30k+ entries in NAT table
 2. rate limited and ip-blacklisted caddy reverse proxy container with LAN/WAN bridge
@@ -79,19 +110,43 @@ infrastructure stack:
 
 5. DNS: cloudflare
 
+</details>
+
 ### hardware infrastructure details
 
-- dell optiplex minipc
+<details>
+
+<summary> hardware info </summary>
+
+- dell optiplex 7050 minipc
 - 32 gb ram
 - 4 cpu cores
 - intel integrated graphics
+- 5tb HDD + 1tb NVMe SSD
+
+</details>
 
 ### software infrastructure details
 
-- LVM encrypted
+<details>
+
+<summary> cool software infra features </summary>
+
+- LUKS encrypted
 - ubuntu server LTS
+- vm management with LXD
+- container management with Docker and Docker compose
+- current vms:
+  - cmudb445: all my homework for CMU's [15-445 Introduction to Database System](https://15445.courses.cs.cmu.edu/fall2025/) lives here!
+  - wireguard tunneled services:
+    - some services need to ONLY be exposed to the internet via a VPN tunnel
+    - so i have set up some docker containerized services *within* an LXD VM whose connection to the internet kills itself if the tunnel is broken
+
+</details>
 
 ### some guidelines i try to stick to
+
+<details>
 
 1. dev/prod parity: dev environments and testing environments are containerized. no surprises going to prod
 2. separate dev instance for testing: <https://dev.candace.cloud>
@@ -107,5 +162,7 @@ infrastructure stack:
     3. well documented (AI should be prompted like "i'm new and i don't know what i'm doing explain why you write the code you do, how it works, and how it should be tested")
     4. contains CLAUDE.md
     5. vibecode-able
+
+</details>
 
 try clicking on a post to see the clean interface, then come back here for the terminal vibes!

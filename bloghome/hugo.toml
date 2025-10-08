@@ -3,6 +3,11 @@ languageCode = 'en-us'
 title = 'candacecloud'
 theme = 'candace'
 
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
 [params]
 author = 'Skanda Kaashyap'
 github = 'kaashmonee'
