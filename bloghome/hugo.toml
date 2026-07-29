@@ -1,21 +1,62 @@
 baseURL = 'https://blog.candace.cloud/'
-languageCode = 'en-us'
-title = 'candacecloud'
+locale = 'en-US'
+title = 'Candace Labs'
 theme = 'candace'
+enableRobotsTXT = true
+disableHugoGeneratorInject = true
+summaryLength = 32
 
-[markup]
-  [markup.goldmark]
-    [markup.goldmark.renderer]
-      unsafe = true
+[pagination]
+  pagerSize = 10
+
+[[menus.main]]
+  name = 'Home'
+  pageRef = '/'
+  weight = 10
+
+[[menus.main]]
+  name = 'Notes'
+  pageRef = '/posts'
+  weight = 20
+
+[[menus.main]]
+  name = 'GitHub'
+  url = 'https://github.com/candacelabs'
+  weight = 30
 
 [params]
-author = 'Skanda Kaashyap'
-github = 'kaashmonee'
-email = 'skandakk a t gmail d o t com'
+  description = 'Field notes on small systems, useful tools, and software with fewer moving parts.'
+  eyebrow = 'systems / tools / field notes'
+  githubURL = 'https://github.com/candacelabs'
 
-[params.social]
-linkedin = 'https://linkedin.com/in/kaashmonee'
-github = 'https://github.com/kaashmonee'
-githubcandace = 'https://github.com/candacelabs'
-resume = 'https://docs.google.com/document/d/1P8LsmdQ1ZsWUwE8tb2j5lexbQHrQauMWCSgeGFumirE/edit?usp=sharing'
+[[params.projects]]
+  name = 'hfs3'
+  language = 'Rust'
+  description = 'A streaming CLI for mirroring Hugging Face repositories to S3, including air-gapped environments.'
+  url = 'https://github.com/candacelabs/hfs3'
 
+[[params.projects]]
+  name = 'candid'
+  language = 'JavaScript'
+  description = 'A privacy-minded browser extension that rewrites email drafts locally with a compatible AI endpoint.'
+  url = 'https://github.com/candacelabs/candid'
+
+[[params.projects]]
+  name = 'desponsorize'
+  language = 'JavaScript'
+  description = 'A focused browser tool that makes sponsored search results easier to distinguish.'
+  url = 'https://github.com/candacelabs/desponsorize'
+
+[privacy]
+  [privacy.disqus]
+    disable = true
+  [privacy.googleAnalytics]
+    disable = true
+  [privacy.instagram]
+    disable = true
+  [privacy.x]
+    disable = true
+  [privacy.vimeo]
+    disable = true
+  [privacy.youtube]
+    disable = true

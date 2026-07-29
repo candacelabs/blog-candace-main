@@ -1,22 +1,26 @@
 {{ define "main" }}
-  <div class="app-style">
-    <div class="container">
+  <article class="article-shell">
+    <header class="article-header">
+      <p class="prompt"><span>candace@cloud</span>:<strong>~</strong>$ less {{ .File.LogicalName }}</p>
+      <a class="back-link" href="{{ relURL "posts/" }}"><span aria-hidden="true">←</span> All notes</a>
       <h1>{{ .Title }}</h1>
-      
-      <div class="post-meta">
-        {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
-        {{ $dateHuman := .Date | time.Format "January 2, 2006" }}
-        <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
-        {{ if .Params.tags }}
-        | Tags: {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
+      {{ with .Description }}<p class="article-summary">{{ . }}</p>{{ end }}
+      <div class="article-meta">
+        <span>Published <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2 January 2006" }}</time></span>
+        {{ if ne (.Lastmod.Format "2006-01-02") (.Date.Format "2006-01-02") }}
+        <span>Updated <time datetime="{{ .Lastmod.Format "2006-01-02" }}">{{ .Lastmod.Format "2 January 2006" }}</time></span>
         {{ end }}
       </div>
-      
+      {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
+    </header>
+
+    <div class="prose article-content">
       {{ .Content }}
-      
-      <div class="footer">
-        <a href="/" class="button">← Back to Terminal</a>
-      </div>
     </div>
-  </div>
+
+    <footer class="article-footer">
+      <p>EOF</p>
+      <a class="button button-secondary" href="{{ relURL "posts/" }}">← Back to notes</a>
+    </footer>
+  </article>
 {{ end }}

@@ -1,0 +1,35 @@
+name: Hugo checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Build pinned Hugo image
+        run: docker build --tag candace-blog:ci .
+
+      - name: Build production site
+        run: |
+          mkdir -p bloghome/public
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            --volume "${{ github.workspace }}/bloghome:/srv" \
+            candace-blog:ci \
+            --minify --gc --cleanDestinationDir --destination /srv/public
+
+      - name: Check public privacy boundary
+        run: ./scripts/check-public-content.sh bloghome/public

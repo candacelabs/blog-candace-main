@@ -1,0 +1,14 @@
+{{ define "main" }}
+  <section class="not-found terminal-window">
+    <div class="terminal-bar" aria-hidden="true">
+      <span></span><span></span><span></span>
+      <p>candace@cloud: ~/404</p>
+    </div>
+    <div>
+      <p class="prompt"><span>error</span>: command returned 404</p>
+      <h1>That page is not here.</h1>
+      <p>The path may have moved, or it may never have existed.</p>
+      <a class="button button-primary" href="{{ site.Home.RelPermalink }}">Return home →</a>
+    </div>
+  </section>
+{{ end }}

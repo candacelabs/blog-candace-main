@@ -1,9 +1,16 @@
 <!DOCTYPE html>
-<html lang="{{ or site.Language.LanguageCode site.Language.Lang }}" dir="{{ or site.Language.LanguageDirection `ltr` }}">
+<html lang="{{ or site.Language.Locale site.Language.Lang }}" dir="{{ or site.Language.Direction `ltr` }}">
 <head>
   {{ partial "head.html" . }}
 </head>
-<body>
-  {{ block "main" . }}{{ end }}
+<body class="{{ if .IsHome }}page-home{{ else }}page-interior{{ end }}">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="site-shell">
+    {{ partial "header.html" . }}
+    <main id="main-content">
+      {{ block "main" . }}{{ end }}
+    </main>
+    {{ partial "footer.html" . }}
+  </div>
 </body>
 </html>

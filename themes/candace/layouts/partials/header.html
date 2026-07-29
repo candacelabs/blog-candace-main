@@ -1,2 +1,7 @@
-<h1>{{ site.Title }}</h1>
-{{ partial "menu.html" (dict "menuID" "main" "page" .) }}
+<header class="site-header">
+  <a class="brand" href="{{ site.Home.RelPermalink }}" aria-label="{{ site.Title }} home">
+    <span class="brand-mark" aria-hidden="true">c</span>
+    <span class="brand-wordmark">{{ site.Title }}</span>
+  </a>
+  {{ partial "menu.html" (dict "menuID" "main" "page" .) }}
+</header>

@@ -1,29 +1,33 @@
 {{ define "main" }}
-  <div class="app-style">
-    <div class="container">
+  <div class="interior-shell">
+    <header class="page-header">
+      <p class="prompt"><span>candace@cloud</span>:<strong>~</strong>$ ls {{ .RelPermalink }}</p>
+      <p class="eyebrow">index</p>
       <h1>{{ .Title }}</h1>
-      {{ .Content }}
-      
-      {{ if .Pages }}
-      <div class="post-list">
-        {{ range .Pages }}
-        <article class="post-item">
-          <h2 class="post-title"><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-          <div class="post-meta">
-            {{ .Date.Format "January 2, 2006" }}
-            {{ if .Params.tags }}
-            | Tags: {{ delimit .Params.tags ", " }}
-            {{ end }}
-          </div>
-          <div class="post-summary">{{ .Summary }}</div>
-        </article>
-        {{ end }}
-      </div>
+      {{ with .Description }}<p class="page-summary">{{ . }}</p>{{ end }}
+      {{ with .Content }}<div class="prose intro-copy">{{ . }}</div>{{ end }}
+    </header>
+
+    {{ if .Pages }}
+    <div class="notes-list notes-list-large">
+      {{ range .Pages.ByDate.Reverse }}
+      <article class="note-row">
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "02 Jan 2006" }}</time>
+        <div>
+          <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
+          {{ with .Description }}<p>{{ . }}</p>{{ else }}<p>{{ .Summary | plainify | truncate 150 }}</p>{{ end }}
+          {{ with .Params.tags }}
+          <ul class="tag-list" aria-label="Tags">
+            {{ range . }}<li>{{ . }}</li>{{ end }}
+          </ul>
+          {{ end }}
+        </div>
+        <span class="note-arrow" aria-hidden="true">↗</span>
+      </article>
       {{ end }}
-      
-      <div class="footer">
-        <a href="/" class="button">← Back to Terminal</a>
-      </div>
     </div>
+    {{ else }}
+    <div class="empty-state">No notes here yet.</div>
+    {{ end }}
   </div>
 {{ end }}
