@@ -20,6 +20,9 @@ while IFS= read -r -d '' path; do
   }
   requires_lfs="false"
   case "${lower_path}" in
+    static/* | */static/*)
+      requires_lfs="true"
+      ;;
     *.7z | *.aac | *.avif | *.bin | *.bmp | *.br | *.bz2 | \
       *.eot | *.flac | *.gif | *.gz | *.ico | *.jpeg | *.jpg | \
       *.m4a | *.mov | *.mp3 | *.mp4 | *.oga | *.ogg | *.ogv | \
