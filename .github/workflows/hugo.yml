@@ -17,9 +17,10 @@ jobs:
 
     steps:
       - name: Check out source
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           lfs: true
+          persist-credentials: false
 
       - name: Verify LFS assets
         run: |
@@ -41,7 +42,215 @@ jobs:
             --user "$(id -u):$(id -g)" \
             --volume "${{ github.workspace }}/bloghome:/srv" \
             candace-blog:ci \
-            --minify --gc --cleanDestinationDir --destination /srv/public
+            --minify --gc --cleanDestinationDir --panicOnWarning \
+            --printPathWarnings --destination /srv/public
 
       - name: Check public privacy boundary
         run: ./scripts/check-public-content.sh bloghome/public
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment:
+      name: production
+      url: https://blog.candace.cloud/
+    concurrency:
+      group: blog-production
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Check out release source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+          persist-credentials: false
+
+      - name: Validate deployment configuration
+        env:
+          BLOG_DEPLOY_HOST: ${{ vars.BLOG_DEPLOY_HOST }}
+          BLOG_DEPLOY_USER: ${{ vars.BLOG_DEPLOY_USER }}
+          BLOG_DEPLOY_KNOWN_HOSTS: ${{ secrets.BLOG_DEPLOY_KNOWN_HOSTS }}
+          BLOG_DEPLOY_SSH_KEY: ${{ secrets.BLOG_DEPLOY_SSH_KEY }}
+          TS_AUDIENCE: ${{ secrets.TS_AUDIENCE }}
+          TS_OAUTH_CLIENT_ID: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+        run: |
+          set -euo pipefail
+          for name in \
+            BLOG_DEPLOY_HOST \
+            BLOG_DEPLOY_USER \
+            BLOG_DEPLOY_KNOWN_HOSTS \
+            BLOG_DEPLOY_SSH_KEY \
+            TS_AUDIENCE \
+            TS_OAUTH_CLIENT_ID
+          do
+            if [[ -z "${!name}" ]]; then
+              echo "Missing production environment setting: ${name}" >&2
+              exit 2
+            fi
+          done
+          if [[ "${BLOG_DEPLOY_USER}" != "blogdeploy" ]]; then
+            echo "BLOG_DEPLOY_USER must be the constrained blogdeploy account." >&2
+            exit 2
+          fi
+          if [[ ! "${BLOG_DEPLOY_HOST}" =~ ^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$ ]]; then
+            echo "BLOG_DEPLOY_HOST must be a single safe MagicDNS label." >&2
+            exit 2
+          fi
+
+      - name: Verify release LFS assets
+        run: |
+          file bloghome/static/og.png | grep --fixed-strings "PNG image data"
+          test "$(stat --format=%s bloghome/static/og.png)" -gt 100000
+
+      - name: Install privacy scanner
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ripgrep
+
+      - name: Build and scan exact release
+        run: |
+          docker build --tag candace-blog:hugo .
+          mkdir -p bloghome/public
+          docker run --rm \
+            --env "HUGO_PARAMS_RELEASESHA=${GITHUB_SHA}" \
+            --user "$(id -u):$(id -g)" \
+            --volume "${{ github.workspace }}/bloghome:/srv" \
+            candace-blog:hugo \
+            --minify --gc --cleanDestinationDir --panicOnWarning \
+            --printPathWarnings --destination /srv/public
+          ./scripts/check-public-content.sh bloghome/public
+          grep --fixed-strings "candace-release" bloghome/public/index.html
+          grep --fixed-strings "${GITHUB_SHA}" bloghome/public/index.html
+
+      - name: Build and smoke-test runtime image
+        run: |
+          set -euo pipefail
+          runtime_image="candace-blog:${GITHUB_SHA}"
+          candidate="candace-blog-ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          trap 'docker rm --force "${candidate}" >/dev/null 2>&1 || true' EXIT
+
+          docker build \
+            --build-arg "VCS_REF=${GITHUB_SHA}" \
+            --file deploy/Dockerfile \
+            --tag "${runtime_image}" \
+            bloghome/public
+          docker run \
+            --detach \
+            --name "${candidate}" \
+            --read-only \
+            --tmpfs /config:rw,noexec,nosuid,nodev,size=1m \
+            --tmpfs /data:rw,noexec,nosuid,nodev,size=1m \
+            --tmpfs /tmp:rw,noexec,nosuid,nodev,size=4m \
+            --pids-limit 128 \
+            --memory 128m \
+            --cpus 0.5 \
+            --cap-drop ALL \
+            --security-opt no-new-privileges:true \
+            "${runtime_image}"
+
+          for attempt in $(seq 1 30); do
+            health="$(docker inspect --format \
+              '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' \
+              "${candidate}")"
+            if [[ "${health}" == "healthy" ]]; then
+              break
+            fi
+            if [[ "${health}" == "unhealthy" || "${attempt}" -eq 30 ]]; then
+              docker logs "${candidate}"
+              exit 1
+            fi
+            sleep 1
+          done
+
+          docker exec "${candidate}" \
+            wget --quiet --output-document=/tmp/homepage http://127.0.0.1:8080/
+          docker exec "${candidate}" grep -F "${GITHUB_SHA}" /tmp/homepage
+          docker exec "${candidate}" \
+            wget --quiet --output-document=/tmp/og.png http://127.0.0.1:8080/og.png
+          test "$(docker exec "${candidate}" stat -c %s /tmp/og.png)" -gt 100000
+
+          docker save "${runtime_image}" | gzip --best > \
+            "${RUNNER_TEMP}/candace-blog-${GITHUB_SHA}.tar.gz"
+
+      - name: Join the deployment network
+        uses: tailscale/github-action@306e68a486fd2350f2bfc3b19fcd143891a4a2d8 # v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: tag:blog-deploy
+          ping: ${{ vars.BLOG_DEPLOY_HOST }}
+
+      - name: Deploy through the constrained host command
+        id: deploy
+        env:
+          BLOG_DEPLOY_HOST: ${{ vars.BLOG_DEPLOY_HOST }}
+          BLOG_DEPLOY_KNOWN_HOSTS: ${{ secrets.BLOG_DEPLOY_KNOWN_HOSTS }}
+          BLOG_DEPLOY_SSH_KEY: ${{ secrets.BLOG_DEPLOY_SSH_KEY }}
+          BLOG_DEPLOY_USER: ${{ vars.BLOG_DEPLOY_USER }}
+        run: |
+          set -euo pipefail
+          key_file="${RUNNER_TEMP}/blog-deploy-key"
+          known_hosts_file="${RUNNER_TEMP}/blog-known-hosts"
+          install -m 600 /dev/null "${key_file}"
+          install -m 600 /dev/null "${known_hosts_file}"
+          printf '%s\n' "${BLOG_DEPLOY_SSH_KEY}" > "${key_file}"
+          printf '%s\n' "${BLOG_DEPLOY_KNOWN_HOSTS}" > "${known_hosts_file}"
+          ssh-keygen -y -f "${key_file}" >/dev/null
+
+          archive="${RUNNER_TEMP}/candace-blog-${GITHUB_SHA}.tar.gz"
+          archive_sha="$(sha256sum "${archive}" | cut -d ' ' -f 1)"
+          ssh_options=(
+            -i "${key_file}"
+            -o BatchMode=yes
+            -o ConnectTimeout=15
+            -o IdentitiesOnly=yes
+            -o StrictHostKeyChecking=yes
+            -o "UserKnownHostsFile=${known_hosts_file}"
+          )
+
+          ssh -T "${ssh_options[@]}" \
+            "${BLOG_DEPLOY_USER}@${BLOG_DEPLOY_HOST}" \
+            "deploy ${GITHUB_SHA} ${archive_sha}" < "${archive}"
+
+      - name: Verify the public release
+        run: |
+          set -euo pipefail
+          live_page="${RUNNER_TEMP}/live-homepage"
+          curl --fail --silent --show-error \
+            --retry 6 --retry-all-errors --retry-delay 5 --max-time 15 \
+            "https://blog.candace.cloud/?release=${GITHUB_SHA}" \
+            --output "${live_page}"
+          grep --fixed-strings "candace-release" "${live_page}"
+          grep --fixed-strings "${GITHUB_SHA}" "${live_page}"
+
+      - name: Roll back a release that failed public verification
+        if: failure() && steps.deploy.outcome == 'success'
+        env:
+          BLOG_DEPLOY_HOST: ${{ vars.BLOG_DEPLOY_HOST }}
+          BLOG_DEPLOY_KNOWN_HOSTS: ${{ secrets.BLOG_DEPLOY_KNOWN_HOSTS }}
+          BLOG_DEPLOY_SSH_KEY: ${{ secrets.BLOG_DEPLOY_SSH_KEY }}
+          BLOG_DEPLOY_USER: ${{ vars.BLOG_DEPLOY_USER }}
+        run: |
+          set -euo pipefail
+          key_file="${RUNNER_TEMP}/blog-deploy-key"
+          known_hosts_file="${RUNNER_TEMP}/blog-known-hosts"
+          install -m 600 /dev/null "${key_file}"
+          install -m 600 /dev/null "${known_hosts_file}"
+          printf '%s\n' "${BLOG_DEPLOY_SSH_KEY}" > "${key_file}"
+          printf '%s\n' "${BLOG_DEPLOY_KNOWN_HOSTS}" > "${known_hosts_file}"
+          ssh-keygen -y -f "${key_file}" >/dev/null
+
+          ssh -T -n \
+            -i "${key_file}" \
+            -o BatchMode=yes \
+            -o ConnectTimeout=15 \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -o "UserKnownHostsFile=${known_hosts_file}" \
+            "${BLOG_DEPLOY_USER}@${BLOG_DEPLOY_HOST}" \
+            "rollback ${GITHUB_SHA}"

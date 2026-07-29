@@ -28,6 +28,7 @@ summaryLength = 32
   description = 'Field notes on small systems, useful tools, and software with fewer moving parts.'
   eyebrow = 'systems / tools / field notes'
   githubURL = 'https://github.com/candacelabs'
+  releaseSHA = ''
 
 [[params.projects]]
   name = 'hfs3'

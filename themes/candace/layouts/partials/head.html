@@ -6,6 +6,9 @@
 {{- $description := .Description | default site.Params.description | plainify }}
 <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s | %s" .Title site.Title }}{{ end }}</title>
 <meta name="description" content="{{ $description }}">
+{{ with site.Params.releaseSHA -}}
+<meta name="candace-release" content="{{ . }}">
+{{ end -}}
 <link rel="canonical" href="{{ .Permalink }}">
 <meta property="og:site_name" content="{{ site.Title }}">
 <meta property="og:title" content="{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }}{{ end }}">

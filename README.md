@@ -5,7 +5,7 @@ A small Hugo site for public notes from [Candace Labs](https://github.com/candac
 ## What is here
 
 - `bloghome/content/` — published pages and notes
-- `themes/candace/` — the terminal-inspired Hugo theme
+- `themes/candace/` — the hand-drawn field-notebook Hugo theme
 - `bloghome/hugo.toml` — navigation, metadata, and selected projects
 - `scripts/check-public-content.sh` — a privacy regression check for generated output
 
@@ -44,4 +44,11 @@ The site deliberately ships without client-side JavaScript or third-party analyt
 
 ## Server integration
 
-The repository can remain mounted as the `blog` submodule in `candace-server`. Copy `docker-compose.blog.example.yaml` into the parent Compose project and adjust only the network and port for that environment.
+Pull requests build and scan the site without deployment. A successful push to
+`main` rebuilds and rechecks the exact revision, packages only the generated
+public output into an immutable runtime image, and sends it to the constrained
+production deployer over Tailscale.
+
+The one-time host and GitHub environment setup lives in the private server
+repository. No production hostname, account, key, or network address is stored
+in this public repository.
