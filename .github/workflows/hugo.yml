@@ -185,8 +185,30 @@ jobs:
           tags: tag:blog-deploy
           ping: ${{ vars.BLOG_DEPLOY_HOST }}
 
+      - name: Confirm this release is still main
+        id: freshness
+        run: |
+          set -euo pipefail
+          main_sha="$(
+            git ls-remote --exit-code \
+              https://github.com/candacelabs/blog-candace-main.git \
+              refs/heads/main |
+              cut -f 1
+          )"
+          if [[ ! "${main_sha}" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Could not resolve a valid main revision." >&2
+            exit 1
+          fi
+          if [[ "${main_sha}" == "${GITHUB_SHA}" ]]; then
+            echo "current=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "current=false" >> "${GITHUB_OUTPUT}"
+            echo "::notice::Skipping superseded release ${GITHUB_SHA}."
+          fi
+
       - name: Deploy through the constrained host command
         id: deploy
+        if: steps.freshness.outputs.current == 'true'
         env:
           BLOG_DEPLOY_HOST: ${{ vars.BLOG_DEPLOY_HOST }}
           BLOG_DEPLOY_KNOWN_HOSTS: ${{ secrets.BLOG_DEPLOY_KNOWN_HOSTS }}
@@ -209,15 +231,19 @@ jobs:
             -o BatchMode=yes
             -o ConnectTimeout=15
             -o IdentitiesOnly=yes
+            -o ServerAliveCountMax=40
+            -o ServerAliveInterval=15
             -o StrictHostKeyChecking=yes
             -o "UserKnownHostsFile=${known_hosts_file}"
           )
 
+          echo "attempted=true" >> "${GITHUB_OUTPUT}"
           ssh -T "${ssh_options[@]}" \
             "${BLOG_DEPLOY_USER}@${BLOG_DEPLOY_HOST}" \
             "deploy ${GITHUB_SHA} ${archive_sha}" < "${archive}"
 
       - name: Verify the public release
+        if: steps.freshness.outputs.current == 'true'
         run: |
           set -euo pipefail
           live_page="${RUNNER_TEMP}/live-homepage"
@@ -229,7 +255,7 @@ jobs:
           grep --fixed-strings "${GITHUB_SHA}" "${live_page}"
 
       - name: Roll back a release that failed public verification
-        if: failure() && steps.deploy.outcome == 'success'
+        if: (failure() || cancelled()) && steps.deploy.outputs.attempted == 'true'
         env:
           BLOG_DEPLOY_HOST: ${{ vars.BLOG_DEPLOY_HOST }}
           BLOG_DEPLOY_KNOWN_HOSTS: ${{ secrets.BLOG_DEPLOY_KNOWN_HOSTS }}
@@ -250,6 +276,8 @@ jobs:
             -o BatchMode=yes \
             -o ConnectTimeout=15 \
             -o IdentitiesOnly=yes \
+            -o ServerAliveCountMax=40 \
+            -o ServerAliveInterval=15 \
             -o StrictHostKeyChecking=yes \
             -o "UserKnownHostsFile=${known_hosts_file}" \
             "${BLOG_DEPLOY_USER}@${BLOG_DEPLOY_HOST}" \
