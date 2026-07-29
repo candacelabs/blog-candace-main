@@ -1,0 +1,7 @@
+.git
+.github
+.openai
+bloghome/public
+bloghome/resources
+bloghome/.hugo_build.lock
+*.md

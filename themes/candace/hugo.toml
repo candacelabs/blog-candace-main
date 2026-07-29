@@ -1,6 +1,6 @@
 baseURL = 'https://example.org/'
-languageCode = 'en-us'
-title = 'My New Hugo Site'
+locale = 'en-US'
+title = 'Candace Theme Example'
 
 [[menus.main]]
 name = 'Home'
