@@ -19,6 +19,11 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v7
 
+      - name: Install privacy scanner
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ripgrep
+
       - name: Build pinned Hugo image
         run: docker build --tag candace-blog:ci .
 

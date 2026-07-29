@@ -1,8 +1,8 @@
 name = 'Candace'
 license = 'MIT'
 licenselink = 'https://github.com/candacelabs/blog-candace-main/blob/main/themes/candace/LICENSE'
-description = 'A responsive terminal-native theme for Candace Labs.'
+description = 'A responsive, hand-drawn field-notebook theme for Candace Labs.'
 homepage = 'https://github.com/candacelabs/blog-candace-main'
-tags = ['blog', 'dark', 'responsive', 'terminal']
+tags = ['blog', 'light', 'responsive', 'handwritten']
 features = ['accessible navigation', 'responsive layout', 'social metadata', 'no JavaScript']
 min_version = '0.116.0'
