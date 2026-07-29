@@ -214,6 +214,7 @@ jobs:
           BLOG_DEPLOY_KNOWN_HOSTS: ${{ secrets.BLOG_DEPLOY_KNOWN_HOSTS }}
           BLOG_DEPLOY_SSH_KEY: ${{ secrets.BLOG_DEPLOY_SSH_KEY }}
           BLOG_DEPLOY_USER: ${{ vars.BLOG_DEPLOY_USER }}
+          DEPLOY_ATTEMPT_INPUT: ${{ github.run_id }}:${{ github.run_attempt }}:${{ github.sha }}
         run: |
           set -euo pipefail
           key_file="${RUNNER_TEMP}/blog-deploy-key"
@@ -226,6 +227,12 @@ jobs:
 
           archive="${RUNNER_TEMP}/candace-blog-${GITHUB_SHA}.tar.gz"
           archive_sha="$(sha256sum "${archive}" | cut -d ' ' -f 1)"
+          deploy_attempt="$(
+            printf '%s\n' "${DEPLOY_ATTEMPT_INPUT}" |
+              sha256sum |
+              cut -d ' ' -f 1
+          )"
+          [[ "${deploy_attempt}" =~ ^[0-9a-f]{64}$ ]]
           ssh_options=(
             -i "${key_file}"
             -o BatchMode=yes
@@ -238,9 +245,10 @@ jobs:
           )
 
           echo "attempted=true" >> "${GITHUB_OUTPUT}"
+          echo "attempt=${deploy_attempt}" >> "${GITHUB_OUTPUT}"
           ssh -T "${ssh_options[@]}" \
             "${BLOG_DEPLOY_USER}@${BLOG_DEPLOY_HOST}" \
-            "deploy ${GITHUB_SHA} ${archive_sha}" < "${archive}"
+            "deploy ${GITHUB_SHA} ${archive_sha} ${deploy_attempt}" < "${archive}"
 
       - name: Verify the public release
         if: steps.freshness.outputs.current == 'true'
@@ -261,6 +269,7 @@ jobs:
           BLOG_DEPLOY_KNOWN_HOSTS: ${{ secrets.BLOG_DEPLOY_KNOWN_HOSTS }}
           BLOG_DEPLOY_SSH_KEY: ${{ secrets.BLOG_DEPLOY_SSH_KEY }}
           BLOG_DEPLOY_USER: ${{ vars.BLOG_DEPLOY_USER }}
+          DEPLOY_ATTEMPT: ${{ steps.deploy.outputs.attempt }}
         run: |
           set -euo pipefail
           key_file="${RUNNER_TEMP}/blog-deploy-key"
@@ -270,6 +279,7 @@ jobs:
           printf '%s\n' "${BLOG_DEPLOY_SSH_KEY}" > "${key_file}"
           printf '%s\n' "${BLOG_DEPLOY_KNOWN_HOSTS}" > "${known_hosts_file}"
           ssh-keygen -y -f "${key_file}" >/dev/null
+          [[ "${DEPLOY_ATTEMPT}" =~ ^[0-9a-f]{64}$ ]]
 
           ssh -T -n \
             -i "${key_file}" \
@@ -281,4 +291,4 @@ jobs:
             -o StrictHostKeyChecking=yes \
             -o "UserKnownHostsFile=${known_hosts_file}" \
             "${BLOG_DEPLOY_USER}@${BLOG_DEPLOY_HOST}" \
-            "rollback ${GITHUB_SHA}"
+            "rollback ${GITHUB_SHA} ${DEPLOY_ATTEMPT}"
