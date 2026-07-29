@@ -23,9 +23,7 @@ jobs:
           persist-credentials: false
 
       - name: Verify LFS assets
-        run: |
-          file bloghome/static/og.png | grep --fixed-strings "PNG image data"
-          test "$(stat --format=%s bloghome/static/og.png)" -gt 100000
+        run: ./scripts/check-lfs-assets.sh
 
       - name: Install privacy scanner
         run: |
@@ -103,9 +101,7 @@ jobs:
           fi
 
       - name: Verify release LFS assets
-        run: |
-          file bloghome/static/og.png | grep --fixed-strings "PNG image data"
-          test "$(stat --format=%s bloghome/static/og.png)" -gt 100000
+        run: ./scripts/check-lfs-assets.sh
 
       - name: Install privacy scanner
         run: |
