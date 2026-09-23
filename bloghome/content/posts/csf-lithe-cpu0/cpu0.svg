@@ -145,5 +145,5 @@
   <text class="ink" x="824" y="568" font-size="13" font-weight="700" text-anchor="middle">Model and simulator processes</text>
   <text class="muted" x="824" y="587" font-size="11" text-anchor="middle">Copilot backend · CARLA · Isaac Sim</text>
 
-  <text class="muted" x="24" y="626" font-size="11">LITHE: He Kai Lim and Tyler R. Clites, arXiv:2603.07442. CPU affinity and isolation are deployment configuration, not CSF behavior.</text>
+  <text class="muted" x="24" y="626" font-size="11">Mapping onto LITHE (Lim and Clites, 2026), arXiv:2603.07442 [cs.RO], LITHE §III-B to §III-E1. CPU affinity and isolation are deployment configuration.</text>
 </svg>

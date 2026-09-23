@@ -12,8 +12,7 @@ watch. This note is about what I built instead. It is called CSF, the
 Cerebrospinal Fluid, and it turned out to fit, almost exactly, into a slot
 that a robotics paper had just drawn.
 
-The paper is [LITHE](https://arxiv.org/abs/2603.07442), by He Kai Lim and Tyler
-R. Clites. CSF's selling point, in LITHE's own vocabulary, is this: **CSF
+The paper is LITHE ([Lim and Clites, 2026](#references)). CSF's selling point, in LITHE's own vocabulary, is this: **CSF
 prevents the avoidable IPC problem inside LITHE's CPU 0 (Housekeeping).** The
 rest of this note explains what that means, how it works, where it stops, and
 why I think the next step is a proof rather than another hardware limit.
@@ -147,23 +146,23 @@ LITHE (Linux Isolated Threading for Hierarchical Execution) collapses a robot's
 control hierarchy onto one commodity single-board computer, a Raspberry Pi 4B.
 A best-effort Python **Brain** directs a real-time C++ **Spine**, and the Brain
 can write, compile and hot-swap entirely new control laws into the running
-Spine without interrupting its 1 kHz loop. The paper reports a worst-case
+Spine without interrupting its 1 kHz loop. Lim and Clites report a worst-case
 execution time under 100 µs and maximum release jitter under 4 µs under heavy
 load. In its demonstration, a local 7-billion-parameter coding model acting as a
 supervisor identified an arm's gravity load and deployed a gravity-compensation
 controller to the moving robot; when the Brain was deliberately frozen, the
 Spine kept holding the load.
 
-The part that stopped me was how LITHE partitions the four cores (§III-B):
+The part that stopped me was how LITHE partitions the four cores (LITHE §III-B):
 
 | Core | LITHE's role |
 |---|---|
-| **CPU 0 (Housekeeping)** | Linux housekeeping, SSH sessions and non-critical interrupts. It absorbs system jitter, and LITHE's loader thread loads new controllers here, off the real-time path (§III-E1). |
+| **CPU 0 (Housekeeping)** | Linux housekeeping, SSH sessions and non-critical interrupts. It absorbs system jitter, and LITHE's loader thread loads new controllers here, off the real-time path (LITHE §III-E1). |
 | CPU 1 (Spine) | The C++ control loop, alone on an isolated core. |
 | CPU 2 (Brain) | The Python runtime. |
 | CPU 3 (Transport) | Blocking SPI/CAN bus I/O. |
 
-And how seriously it takes inter-process communication (§III-C): Brain and
+And how seriously it takes inter-process communication (LITHE §III-C): Brain and
 Spine share a lock-free, zero-copy POSIX shared-memory region guarded by a
 seqlock, with its layout owned by a build-time, schema-driven generator that
 emits both the C++ structs and the Python bindings. The abstract names complex
@@ -181,7 +180,9 @@ IPC query.
 ![CSF drawn inside LITHE's CPU 0 as one Go process containing typed tools, sessions, schedules, knowledge, observation and bounded workers. LITHE's Brain, Spine and Transport cores, their shared-memory IPC, and the external PostgreSQL, OpenSearch, Langfuse and model or simulator boundaries are drawn outside it.](cpu0.svg)
 
 *An architectural mapping drawn by hand, not a description of a deployment.*
-*LITHE's own architecture figures are in [the paper](https://arxiv.org/html/2603.07442v1#S1.F2).*
+*LITHE's own architecture figures are Figures 1 and 2 of
+[Lim and Clites (2026)](https://arxiv.org/html/2603.07442v1#S1.F2), linked rather than
+reproduced here.*
 
 ### How CSF prevents the IPC problem inside CPU 0
 
@@ -230,10 +231,11 @@ The claim is precise, so its limits should be too:
 
 LITHE is admirably direct about where its safety story ends. Its user-space
 real-time approach "provides a functional margin of safety, even if it lacks the
-formal mathematical guarantees of a verified real-time operating system" (§V-A).
+formal mathematical guarantees of a verified real-time operating system"
+(LITHE §V-A).
 For model-written controllers, "it remains an area of active research to
 implement appropriate safety and verification bounds on the model's output"
-(§V-B). And in §V-C: "theoretical stability guarantees remain an open
+(LITHE §V-B). And in LITHE §V-C: "theoretical stability guarantees remain an open
 challenge. Where control theory is unvalidated, safety must be enforced via
 strict hardware-level limits on torque and velocity."
 
@@ -326,7 +328,14 @@ and acceptance; autonomous neural training is not demonstrated; the Copilot
 backend is a deliberate external boundary rather than an embedded model loop.
 Nothing here establishes physical safety.
 
-If you work on LITHE-style systems, read [the paper](https://arxiv.org/abs/2603.07442).
+If you work on LITHE-style systems, read [the paper](#references).
 It is the clearest statement I have found of why the space between a model and
 a motor deserves its own architecture. CSF is my attempt at the part of that
 architecture that lives on CPU 0.
+
+## References
+
+He Kai Lim and Tyler R. Clites. *LITHE: Bridging Best-Effort Python and Real-Time
+C++ for Hot-Swapping Robotic Control Laws on Commodity Linux.* arXiv:2603.07442
+[cs.RO], 2026. Submitted to IROS 2026.
+<https://doi.org/10.48550/arXiv.2603.07442>
