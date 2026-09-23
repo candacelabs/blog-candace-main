@@ -310,9 +310,8 @@ model on one GPU at home should be able to do it. That is the whole point.
 
 CSF's first release is a **developer preview**. Version 0.1.0 is a breaking
 integration baseline with no stability or compatibility promise: pin a
-reviewed snapshot and expect interfaces to change. The source is published at
-[github.com/candacelabs/csf](https://github.com/candacelabs/csf); its first
-reviewed snapshot is still in review, and a tagged release follows that.
+reviewed snapshot and expect interfaces to change. The source release is
+forthcoming; this note will link to it once it is published.
 
 What is real today: the one-process host with generated HTTP, CLI and MCP
 operations; the Workbench for sessions and worktrees; typed consumer tools on
